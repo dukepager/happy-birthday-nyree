@@ -216,6 +216,46 @@
       z-index: 20;
       font-family: Verdana, monospace;
     }
+
+    /* ── MOBILE ── */
+    @media (max-width: 600px) {
+      /* Hide flanking photos */
+      .photo-left,
+      .photo-right { display: none; }
+
+      /* Main photo fills screen */
+      .photo-main img {
+        height: 70vh;
+        max-width: 92vw;
+        width: 92vw;
+      }
+
+      /* Number list → horizontal row at bottom */
+      .number-list {
+        top: auto;
+        bottom: 36px;
+        left: 0;
+        right: 0;
+        transform: none;
+        flex-direction: row;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px 12px;
+        padding: 0 16px;
+      }
+
+      /* Nav: hide center + counter on small screens */
+      .nav-center,
+      .nav-right { display: none; }
+
+      nav { padding: 12px 16px; }
+
+      /* Swipe hint instead of arrow keys */
+      .arrow-hint { content: 'SWIPE'; }
+
+      /* Bottom bar */
+      .bottom-bar { display: none; }
+    }
   </style>
 </head>
 <body>
@@ -358,6 +398,16 @@
       if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo((current + 1) % total);
       if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goTo((current - 1 + total) % total);
     });
+
+    // ── Swipe nav ────────────────────────────────────────────
+    let touchStartX = 0;
+    document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+    document.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - touchStartX;
+      if (Math.abs(dx) < 40) return;
+      if (dx < 0) goTo((current + 1) % total);
+      else        goTo((current - 1 + total) % total);
+    }, { passive: true });
 
     // ── Init ─────────────────────────────────────────────────
     render(0, false);

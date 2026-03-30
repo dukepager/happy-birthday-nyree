@@ -457,6 +457,42 @@
       z-index: 5;
       position: relative;
     }
+
+    /* ── MOBILE ── */
+    @media (max-width: 540px) {
+      body {
+        overflow-x: hidden;
+        overflow-y: auto;
+        justify-content: flex-start;
+        padding-top: 60px;
+        padding-bottom: 50px;
+      }
+
+      .device-wrap {
+        width: 100vw;
+        overflow: hidden;
+      }
+
+      .sidekick {
+        transform: scale(0.72);
+        transform-origin: top center;
+        margin-bottom: calc((1 - 0.72) * -420px);
+      }
+
+      .top-bar-title {
+        font-size: 12px;
+        letter-spacing: 2px;
+      }
+
+      .ticker-wrap {
+        font-size: 9px;
+      }
+
+      .device-label {
+        font-size: 8px;
+        margin-top: 8px;
+      }
+    }
   </style>
 </head>
 <body>
