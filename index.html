@@ -148,14 +148,20 @@
     });
   </script>
 
-  <audio id="bgMusic" src="bless-us-all.mp3" loop preload="auto"></audio>
+  <audio id="bgMusic" src="bless-us-all.mp3" loop preload="auto" muted autoplay></audio>
 
   <script>
-    // Autoplay on first interaction (browser policy)
     const music = document.getElementById('bgMusic');
+    // Start muted (browsers allow this), then immediately unmute
     music.volume = 0.7;
-    music.play().catch(() => {
-      document.addEventListener('click', () => music.play(), { once: true });
+    music.play().then(() => {
+      music.muted = false;
+    }).catch(() => {
+      // Fallback: unmute on first click
+      document.addEventListener('click', () => {
+        music.muted = false;
+        music.play();
+      }, { once: true });
     });
   </script>
 
