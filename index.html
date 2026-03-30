@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Happy Birthday Nyree</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #000;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      font-family: 'EB Garamond', Georgia, serif;
+    }
+
+    /* ── Fullscreen photo stack ── */
+    .slide {
+      position: fixed;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      opacity: 0;
+      transition: opacity 1.2s ease-in-out;
+      z-index: 0;
+    }
+    .slide.active { opacity: 1; }
+
+    /* Subtle dark overlay so text always reads */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.28);
+      z-index: 1;
+    }
+
+    /* ── Center text ── */
+    .center {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      text-align: center;
+    }
+
+    .center h1 {
+      font-family: Impact, 'Arial Black', sans-serif;
+      font-size: clamp(64px, 10vw, 130px);
+      font-weight: 900;
+      color: #fff;
+      line-height: 0.95;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .center a {
+      display: inline-block;
+      margin-top: 24px;
+      color: #fff;
+      font-family: Verdana, Arial, sans-serif;
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: 1px solid rgba(255,255,255,0.5);
+      padding: 10px 32px;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .center a:hover {
+      background: #fff;
+      color: #000;
+    }
+
+
+    /* ── Page transition ── */
+    #page-cover {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 9999;
+      opacity: 1;
+      transition: opacity 0.7s ease;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="page-cover"></div>
+
+  <div id="slides"></div>
+  <div class="overlay"></div>
+
+  <div class="center">
+    <h1>Happy Birthday<br>Nyree</h1>
+    <a href="nyree.html">Enter</a>
+  </div>
+
+
+  <script>
+    const total = 16;
+    const srcs  = Array.from({ length: total }, (_, i) =>
+      `web%20photos/nyree-${String(i + 1).padStart(2, '0')}.jpg`
+    );
+
+    // Build slides
+    const container = document.getElementById('slides');
+    const slideEls  = srcs.map(src => {
+      const div = document.createElement('div');
+      div.className = 'slide';
+      div.style.backgroundImage = `url('${src}')`;
+      container.appendChild(div);
+      return div;
+    });
+
+    let current = 0;
+
+    function goTo(idx) {
+      slideEls[current].classList.remove('active');
+      current = idx;
+      slideEls[current].classList.add('active');
+    }
+
+    goTo(0);
+    setInterval(() => goTo((current + 1) % total), 4000);
+  </script>
+
+
+  <script>
+    // Fade in on load
+    const cover = document.getElementById('page-cover');
+    window.addEventListener('DOMContentLoaded', () => {
+      requestAnimationFrame(() => { cover.style.opacity = '0'; });
+    });
+    // Fade out on link click
+    document.addEventListener('click', e => {
+      const link = e.target.closest('a[href]');
+      if (!link || link.target === '_blank') return;
+      e.preventDefault();
+      const href = link.href;
+      cover.style.opacity = '1';
+      cover.style.pointerEvents = 'all';
+      setTimeout(() => { window.location = href; }, 700);
+    });
+  </script>
+
+  <audio id="bgMusic" src="bless-us-all.mp3" loop preload="auto"></audio>
+
+  <script>
+    // Autoplay on first interaction (browser policy)
+    const music = document.getElementById('bgMusic');
+    music.volume = 0.7;
+    music.play().catch(() => {
+      document.addEventListener('click', () => music.play(), { once: true });
+    });
+  </script>
+
+</body>
+</html>

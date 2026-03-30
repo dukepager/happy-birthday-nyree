@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nyree — Archive</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #000;
+      min-height: 100vh;
+      font-family: Verdana, Arial, sans-serif;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      padding: 16px 24px;
+      font-size: 11px;
+      letter-spacing: 1px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    nav .logo {
+      font-family: Impact, 'Arial Black', sans-serif;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: 14px;
+      margin-right: 20px;
+      color: #fff;
+    }
+
+    nav a {
+      color: rgba(255,255,255,0.5);
+      text-decoration: none;
+      margin-right: 16px;
+      font-size: 10px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    nav a:hover { color: #fff; }
+
+    nav .nav-center {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      color: rgba(255,255,255,0.4);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    nav .nav-right {
+      margin-left: auto;
+      font-size: 10px;
+      color: rgba(255,255,255,0.4);
+    }
+
+    /* ── NUMBER LIST (left) ── */
+    .number-list {
+      position: fixed;
+      left: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .num-item {
+      font-size: 10px;
+      color: rgba(255,255,255,0.25);
+      cursor: pointer;
+      letter-spacing: 1px;
+      padding: 1px 0;
+      transition: color 0.2s;
+      font-family: Verdana, monospace;
+    }
+    .num-item:hover { color: rgba(255,255,255,0.6); }
+    .num-item.active {
+      color: #fff;
+      font-weight: 700;
+    }
+
+    /* ── STAGE ── */
+    .stage {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Main large photo */
+    .photo-main {
+      position: relative;
+      z-index: 5;
+      transition: opacity 0.35s ease;
+    }
+    .photo-main img {
+      display: block;
+      height: 68vh;
+      max-width: 54vw;
+      object-fit: cover;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.8);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* Caption overlay on main photo */
+    .photo-caption {
+      position: absolute;
+      bottom: 18px;
+      left: 18px;
+      display: flex;
+      gap: 16px;
+      align-items: baseline;
+    }
+    .caption-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.9);
+    }
+    .caption-sub {
+      font-size: 10px;
+      color: rgba(255,255,255,0.7);
+      font-weight: 300;
+      font-style: italic;
+    }
+
+    /* Left peek photo */
+    .photo-left {
+      position: absolute;
+      left: calc(50% - 54vw/2 - 160px);
+      top: 50%;
+      transform: translateY(-30%);
+      z-index: 4;
+      transition: opacity 0.35s ease;
+    }
+    .photo-left img {
+      display: block;
+      height: 30vh;
+      width: 150px;
+      object-fit: cover;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+
+    /* Right peek photo */
+    .photo-right {
+      position: absolute;
+      right: calc(50% - 54vw/2 - 170px);
+      top: 50%;
+      transform: translateY(-60%);
+      z-index: 4;
+      transition: opacity 0.35s ease;
+    }
+    .photo-right img {
+      display: block;
+      height: 25vh;
+      width: 140px;
+      object-fit: cover;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+
+    /* Fade transition */
+    .fading { opacity: 0; }
+
+    /* ── BOTTOM BAR ── */
+    .bottom-bar {
+      position: fixed;
+      bottom: 18px;
+      left: 24px;
+      right: 24px;
+      display: flex;
+      justify-content: space-between;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      padding-top: 10px;
+      z-index: 20;
+      font-size: 10px;
+      color: rgba(255,255,255,0.35);
+      font-family: Verdana, monospace;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* ── Page transition ── */
+    #page-cover {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 9999;
+      opacity: 1;
+      transition: opacity 0.7s ease;
+      pointer-events: none;
+    }
+
+    /* Arrow navigation hint */
+    .arrow-hint {
+      position: fixed;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 10px;
+      color: rgba(255,255,255,0.2);
+      letter-spacing: 3px;
+      z-index: 20;
+      font-family: Verdana, monospace;
+    }
+  </style>
+</head>
+<body>
+  <div id="page-cover"></div>
+
+  <!-- Nav -->
+  <nav>
+    <span class="logo">Archive</span>
+    <a href="index.html">Home</a>
+    <a href="video.html">Watch</a>
+    <span class="nav-center">For Nyree ♥</span>
+    <span class="nav-right" id="nav-counter">001</span>
+  </nav>
+
+  <!-- Number list -->
+  <div class="number-list" id="numList"></div>
+
+  <!-- Stage -->
+  <div class="stage">
+    <div class="photo-left"  id="photoLeft">
+      <img src="" alt="" />
+    </div>
+    <div class="photo-main" id="photoMain">
+      <img src="" alt="" />
+      <div class="photo-caption">
+        <span class="caption-label" id="captionLabel"></span>
+        <span class="caption-sub"   id="captionSub"></span>
+      </div>
+    </div>
+    <div class="photo-right" id="photoRight">
+      <img src="" alt="" />
+    </div>
+  </div>
+
+  <!-- Bottom bar -->
+  <div class="bottom-bar">
+    <span id="totalCount">020 in total</span>
+    <span>NYREE</span>
+  </div>
+
+  <div class="arrow-hint">← →</div>
+
+  <script>
+    // ── Photo data ──────────────────────────────────────────
+    const photos = Array.from({ length: 16 }, (_, i) => ({
+      src: `web%20photos/nyree-${String(i + 1).padStart(2, '0')}.jpg`,
+      label: String(i + 1).padStart(3, '0'),
+      caption: ''
+    }));
+
+    const captions = [
+      'Always herself.',
+      'Pure light.',
+      'Her laugh.',
+      'Unstoppable.',
+      'Queen.',
+      'My person.',
+      'Beautiful soul.',
+      'Magic.',
+      'This smile.',
+      'Forever.',
+      'My everything.',
+      'Iconic.',
+      'So her.',
+      'Radiant.',
+      'Effortless.',
+      'Happy birthday.'
+    ];
+
+    photos.forEach((p, i) => p.caption = captions[i] || '');
+
+    // ── State ───────────────────────────────────────────────
+    let current = 0;
+    const total = photos.length;
+
+    // ── Build number list ───────────────────────────────────
+    const numList = document.getElementById('numList');
+    photos.forEach((p, i) => {
+      const el = document.createElement('div');
+      el.className = 'num-item' + (i === 0 ? ' active' : '');
+      el.textContent = p.label;
+      el.addEventListener('click', () => goTo(i));
+      numList.appendChild(el);
+    });
+
+    // ── DOM refs ─────────────────────────────────────────────
+    const mainImg    = document.querySelector('#photoMain img');
+    const leftImg    = document.querySelector('#photoLeft img');
+    const rightImg   = document.querySelector('#photoRight img');
+    const labelEl    = document.getElementById('captionLabel');
+    const subEl      = document.getElementById('captionSub');
+    const counterEl  = document.getElementById('nav-counter');
+    const totalEl    = document.getElementById('totalCount');
+
+    totalEl.textContent = `${String(total).padStart(3,'0')} in total`;
+
+    function render(idx, animate) {
+      const prev = (idx - 1 + total) % total;
+      const next = (idx + 1) % total;
+
+      const targets = [
+        document.getElementById('photoMain'),
+        document.getElementById('photoLeft'),
+        document.getElementById('photoRight')
+      ];
+
+      if (animate) {
+        targets.forEach(t => t.classList.add('fading'));
+        setTimeout(() => {
+          swap(idx, prev, next);
+          targets.forEach(t => t.classList.remove('fading'));
+        }, 300);
+      } else {
+        swap(idx, prev, next);
+      }
+    }
+
+    function swap(idx, prev, next) {
+      mainImg.src  = photos[idx].src;
+      leftImg.src  = photos[prev].src;
+      rightImg.src = photos[next].src;
+
+      labelEl.textContent = photos[idx].label;
+      subEl.textContent   = photos[idx].caption;
+      counterEl.textContent = photos[idx].label;
+
+      // Update active number
+      document.querySelectorAll('.num-item').forEach((el, i) => {
+        el.classList.toggle('active', i === idx);
+      });
+    }
+
+    function goTo(idx) {
+      current = idx;
+      render(idx, true);
+    }
+
+    // ── Keyboard nav ─────────────────────────────────────────
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo((current + 1) % total);
+      if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goTo((current - 1 + total) % total);
+    });
+
+    // ── Init ─────────────────────────────────────────────────
+    render(0, false);
+
+    // ── Page transitions ─────────────────────────────────────
+    const cover = document.getElementById('page-cover');
+    requestAnimationFrame(() => { cover.style.opacity = '0'; });
+    document.addEventListener('click', e => {
+      const link = e.target.closest('a[href]');
+      if (!link || link.target === '_blank') return;
+      e.preventDefault();
+      const href = link.href;
+      cover.style.opacity = '1';
+      cover.style.pointerEvents = 'all';
+      setTimeout(() => { window.location = href; }, 700);
+    });
+  </script>
+
+</body>
+</html>
